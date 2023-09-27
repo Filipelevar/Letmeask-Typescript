@@ -12,6 +12,7 @@ import { useAuth } from '../../hooks/useAuth'
 import './styles.scss'
 import { database } from '../../Services/firebase'
 import { push, ref } from 'firebase/database'
+import { useLogout } from '../../hooks/useLogout'
 
 
 
@@ -19,24 +20,41 @@ import { push, ref } from 'firebase/database'
 export function NewRoom() {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const logout = useLogout();
 
     const [newRoom, setNewRoom] = useState('');
 
     async function handleCreateRoom(event: FormEvent) {
         event.preventDefault();
 
-        if (newRoom.trim() === '' || !user) {
-            return;
+
+        try {
+            if (newRoom.trim() === '' || !user) {
+                return;
+
+            }
+
+
+            const roomRef = ref(database, 'rooms');
+
+            const firebaseRoom = await push(roomRef, {
+                title: newRoom,
+                authorId: user.id,
+            });
+
+            navigate(`/rooms/${firebaseRoom.key}`);
         }
 
-        const roomRef = ref(database, 'rooms');
+        catch (error) {
+            console.log(error)
+        }
+    }
 
-        const firebaseRoom = await push(roomRef, {
-            title: newRoom,
-            authorId: user.id,
-        });
 
-        navigate(`/rooms/${firebaseRoom.key}`);
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/')
     }
 
 
@@ -48,6 +66,7 @@ export function NewRoom() {
                 <p>Tire as dúvidas da sua audiência en tempo-real</p>
             </aside>
             <main>
+                <Button onClick={handleLogout}>Logout</Button>
                 <div className="main-content-Room">
                     <img src={logoImg} alt="Letmeask" />
                     <h1>{user?.nome}</h1>

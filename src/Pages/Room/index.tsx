@@ -3,6 +3,8 @@ import { FormEvent, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { useRoom } from '../../hooks/useRoom'
+import { useLogout } from '../../hooks/useLogout'
+import { useNavigate } from 'react-router-dom';
 
 
 import './styles.scss'
@@ -30,10 +32,20 @@ type RoomParams = {
 export function Room() {
     const { user } = useAuth();
     const params = useParams<RoomParams>();
+    const navigate = useNavigate()
     const roomId = params.id || "";
     const [newQuestion, setNewQuestion] = useState('');
+    const logout = useLogout();
 
     const { title, questions } = useRoom(roomId)
+
+
+
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/')
+    }
 
 
     async function handleSendQuestion(event: FormEvent) {
@@ -81,6 +93,7 @@ export function Room() {
                 <div className="content">
                     <img src={logoImg} alt="Letmeask" />
                     <RoomCode code={roomId} />
+                    <Button onClick={handleLogout}>Logout</Button>
                 </div>
             </header>
 

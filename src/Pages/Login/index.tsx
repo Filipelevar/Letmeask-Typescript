@@ -1,5 +1,5 @@
 //React
-import { FormEvent, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 //Image
@@ -14,41 +14,42 @@ import toast from 'react-hot-toast';
 import './styles.scss'
 
 //Firebase
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { Link } from 'react-router-dom';
 // import { database } from '../../Services/firebase';
 // import { DataSnapshot, get, ref } from 'firebase/database';
 
 
+
 export function Login() {
     const navigate = useNavigate();
-    const { user, signInWithGoogle } = useAuth()
+    const { user, signInWithGoogle, loginUsernameAndPassword } = useAuth()
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    // const [roomCode, setRoomCode] = useState('')
+
 
     async function handleCreateRoom() {
         if (!user) {
             await signInWithGoogle()
         }
 
+        console.log('aqui')
         navigate('/home');
 
+
     }
 
-
-    async function handleLogin(event: FormEvent) {
-        event.preventDefault();
-
+    async function handleLogin(e: any) {
+        e.preventDefault()
         try {
-            const auth = getAuth();
-            await signInWithEmailAndPassword(auth, email, password);
-            navigate('/home');
+            await loginUsernameAndPassword(email, password, navigate);
+
         } catch (error) {
             toast.error("Erro ao fazer login. Verifique suas credenciais")
-
         }
+
     }
+
+
 
 
     return (

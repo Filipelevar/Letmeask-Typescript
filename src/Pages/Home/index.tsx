@@ -14,6 +14,7 @@ import { database } from '../../Services/firebase';
 import { DataSnapshot, get, ref } from 'firebase/database';
 import { Button } from '../../Components/Button';
 import { useAuth } from '../../hooks/useAuth';
+import { useLogout } from '../../hooks/useLogout';
 
 
 
@@ -22,15 +23,17 @@ export function Home() {
     const navigate = useNavigate();
     const { user } = useAuth()
     const [roomCode, setRoomCode] = useState('')
+    const logout = useLogout();
 
-    // async function handleCreateRoom() {
-    //     if (!user) {
-    //         await signInWithGoogle()
-    //     }
 
-    //     navigate('/rooms/new');
+    const handleLogout = async () => {
+        await logout();
 
-    // }
+        navigate('/')
+    }
+
+
+
 
     async function handleJoinRoom(event: FormEvent) {
         event.preventDefault();
@@ -65,14 +68,16 @@ export function Home() {
     return (
         <div id='page-auth-home'>
             <aside>
+
                 <img src={illustrationIMG} alt="ilustração simbolizando perguntas e respostas" />
                 <strong>Crie Salas de Q&amp;A ao vivo</strong>
                 <p>Tire as dúvidas da sua audiência en tempo-real</p>
             </aside>
             <main>
+                <Button onClick={handleLogout}>Logout</Button>
                 <div className="main-content-home">
                     <img src={logoImg} alt="Letmeask" />
-                    <h1>Olá, {user?.nome}</h1>
+                    <h1>Olá {user?.nome}</h1>
                     <div className="separator-home"> Entre em uma Sala</div>
                     <form onSubmit={handleJoinRoom}>
                         <input

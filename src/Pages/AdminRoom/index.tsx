@@ -16,6 +16,7 @@ import { RoomCode } from '../../Components/RoomCode'
 import { Question } from '../../Components/Question'
 import { get, ref, remove, update } from 'firebase/database';
 import { database } from '../../Services/firebase'
+import { useLogout } from '../../hooks/useLogout'
 
 
 
@@ -31,6 +32,13 @@ export function AdminRoom() {
     const roomId = params.id || "";
     const { title, questions } = useRoom(roomId)
     const navigate = useNavigate();
+    const logout = useLogout();
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/')
+    }
+
 
     async function handleEndRoom() {
         if (window.confirm('Tem certeza que você deseja encerrar esta sala?')) {
@@ -83,6 +91,7 @@ export function AdminRoom() {
                     <div>
                         <RoomCode code={roomId} />
                         <Button isOutlined onClick={handleEndRoom}>Encerrar Sala</Button>
+                        <Button onClick={handleLogout}>Logout</Button>
                     </div>
                 </div>
             </header>
